@@ -43,7 +43,7 @@ LIMIT 1;
 -- Answer: (1991) avg_rating: 7.45
 
 
--- 3. What is the highest grossing G-rated movie? Which company distributed it?
+-- 3. What is the highest grossing G-rated movie? Which company distributed it?+
 
 SELECT
     MAX(revenue.worldwide_gross) AS highest_gross,
@@ -57,7 +57,7 @@ JOIN
     revenue USING(movie_id)
 WHERE
     specs.mpaa_rating = 'G'
-GROUP BY specs.mpaa_rating, distributors.company_name, specs.film_title -- Why do I need to include specs.film_title (per Postgres) when I'm not looking to group by individual movie titles. The question is asking for the single highest-grossing G-rated movie overall.   
+GROUP BY specs.mpaa_rating, distributors.company_name, specs.film_title -- Why do I need to include specs.film_title (per Postgres) when I'm not looking to group by individual movie titles. The question is asking for the single highest-grossing G-rated movie overall. More clarification was provided. The group by in this case isn't necessary nor the aggregation in the SELECT statement.   
 ORDER BY 1 DESC	
 LIMIT 1; 
 
@@ -95,8 +95,8 @@ LIMIT 5;
 -- 6. How many movies in the dataset are distributed by a company which is not headquartered in California? Which of these movies has the highest imdb rating?
 
 -- a.
-SELECT
-    COUNT(DISTINCT specs.movie_id) AS total_movies_not_from_CA_distributor
+
+SELECT COUNT(DISTINCT specs.movie_id) AS total_movies_not_from_CA_distributor
 FROM distributors 
 	JOIN specs 
 	ON distributors.distributor_id = specs.domestic_distributor_id
@@ -104,17 +104,17 @@ WHERE distributors.headquarters NOT LIKE '%CA%';
 
 -- Using ILIKE 
 SELECT
-    COUNT(DISTINCT specs.movie_id) AS total_movies_not_from_CA_distributor
+
+Select COUNT(DISTINCT specs.movie_id) AS total_movies_not_from_CA_distributor
 FROM distributors 
 	JOIN specs 
 	ON distributors.distributor_id = specs.domestic_distributor_id
-WHERE distributors.headquarters NOT ILIKE '%CA%'; -- -- Different result using ILIKE. Discuss in class 
+WHERE distributors.headquarters NOT ILIKE '%CA'; -- -- Different result using ILIKE. Discuss in class 
 
 -- b.
 SELECT
     specs.film_title,
-    distributors.company_name,
-    distributors.headquarters,
+	distributors.headquarters,
     rating.imdb_rating AS highest_imdb_rating_for_this_movie
 FROM distributors 
 	JOIN specs 
@@ -122,14 +122,13 @@ FROM distributors
 	JOIN rating 
 	USING(movie_id)
 WHERE distributors.headquarters NOT LIKE '%CA%'
-ORDER BY 4 DESC
+ORDER BY 3 DESC
 LIMIT 1;
 
 -- Using ILIKE 
 
 SELECT
     specs.film_title,
-    distributors.company_name,
     distributors.headquarters,
     rating.imdb_rating AS highest_imdb_rating_for_this_movie
 FROM distributors 
@@ -138,7 +137,7 @@ FROM distributors
 	JOIN rating 
 	USING(movie_id)
 WHERE distributors.headquarters NOT ILIKE '%CA%'
-ORDER BY 4 DESC
+ORDER BY 3 DESC
 LIMIT 1;
 
 -- Answer: (2) movies. Dirty Dancing had the highest imdb rating out of the (2) 
@@ -164,7 +163,7 @@ ORDER BY 4 DESC;
 -- Answer: Listing the Top (3) Movies over 120 minutes with higher_avg_rating: The Dark Knight (9.0), Schindler's List (8.9), The Lord of the Rings: The Return of the King (8.9)
 		   Listing the Top (3) Movies under 120 minutues with higher_avg_rating: The Silence of the Lambs (8.6), Back to the Future (8.5), The Lion King (8.5)
 
-Recommended Formula -- Discuss in Class: 
+-- Query Using CASE STATEMENT
 
 SELECT
     CASE
